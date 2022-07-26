@@ -278,6 +278,7 @@
             this.btnSquare.Size = new System.Drawing.Size(109, 85);
             this.btnSquare.TabIndex = 0;
             this.btnSquare.UseVisualStyleBackColor = true;
+            this.btnSquare.Click += new System.EventHandler(this.btnSquare_Click);
             // 
             // btnCircle
             // 
@@ -288,6 +289,7 @@
             this.btnCircle.Size = new System.Drawing.Size(109, 85);
             this.btnCircle.TabIndex = 0;
             this.btnCircle.UseVisualStyleBackColor = true;
+            this.btnCircle.Click += new System.EventHandler(this.btnCircle_Click);
             // 
             // btnHexagon
             // 
@@ -316,6 +318,7 @@
             this.PaintPictureBox.Size = new System.Drawing.Size(1137, 722);
             this.PaintPictureBox.TabIndex = 1;
             this.PaintPictureBox.TabStop = false;
+            this.PaintPictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.PaintPictureBox_Paint);
             this.PaintPictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PaintPictureBox_MouseDown);
             this.PaintPictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PaintPictureBox_MouseMove);
             this.PaintPictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PaintPictureBox_MouseUp);

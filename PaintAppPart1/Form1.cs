@@ -33,6 +33,43 @@ namespace PaintAppPart1
         /// butonlara tıklanıldığında değer atadığımız değişken
         /// </summary>
         int index;
+
+
+        //for draw for draw rectangle
+        /// <summary>
+        ///  draw rectangle for parameters
+        /// </summary>
+        int MoveX, MoveY,sizeX,sizeY,startPositionX, startPositionY;
+
+        private void PaintPictureBox_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics graphics = e.Graphics;
+
+            if (isPaint)
+            {
+                if (index == 3)
+                {
+                    //graphics.FillEllipse(new SolidBrush(Color.Black), startPositionX, startPositionY, sizeX, sizeY);
+                    graphics.DrawEllipse(defaultPen, startPositionX, startPositionY, sizeX, sizeY);
+
+                }
+                if (index ==2)
+                {
+                    graphics.DrawRectangle(defaultPen, startPositionX, startPositionY, sizeX, sizeY);
+                }
+            }
+        }
+
+        private void btnSquare_Click(object sender, EventArgs e)
+        {
+            index = 2;
+        }
+
+        private void btnCircle_Click(object sender, EventArgs e)
+        {
+            index = 3;
+        }
+
         public Form1()
         {
             InitializeComponent();
@@ -48,23 +85,27 @@ namespace PaintAppPart1
             defaultPen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
             defaultPen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
 
-
+            
         }
         private void btnPencil_Click(object sender, EventArgs e)
         {
             index = 1;
         }
-
-        private void PaintPictureBox_MouseUp(object sender, MouseEventArgs e)
+        private void PaintPictureBox_MouseDown(object sender, MouseEventArgs e)
         {
-            isPaint = false;
+            isPaint = true;
+            pointY = e.Location;
+
+            //for draw rectangle
+            startPositionX = e.X;
+            startPositionY = e.Y;
         }
 
         private void PaintPictureBox_MouseMove(object sender, MouseEventArgs e)
         {
             if (isPaint)
             {
-                if (index ==1)
+                if (index == 1)
                 {//kullanıcımız kalem seçmiş demektir.
                     pointX = e.Location;
                     graphics.DrawLine(defaultPen, pointY, pointX);
@@ -73,15 +114,35 @@ namespace PaintAppPart1
                 }
             }
             PaintPictureBox.Refresh();
+
+            //for draw rectangle
+            MoveX = e.X; //mouse x ekseninde ne kadar hareket ettirilmiş 
+            MoveY = e.Y; //mosue y ekseninde ne kadar hareket ettirilmiş
+            sizeX = e.X - startPositionX;
+            sizeY = e.Y - startPositionY;
             //
         }
-
-        private void PaintPictureBox_MouseDown(object sender, MouseEventArgs e)
+        private void PaintPictureBox_MouseUp(object sender, MouseEventArgs e)
         {
-            isPaint = true;
-            pointY = e.Location;
+            isPaint = false;
 
+            //for draw rectangle
+            sizeX = MoveX - startPositionX;
+            sizeY = MoveY - startPositionY;
+            if (index == 3)
+            {
+                graphics.FillEllipse(new SolidBrush(Color.Black), startPositionX, startPositionY, sizeX, sizeY);
+            }
+            if (index ==2)
+            {
+                graphics.FillRectangle(new SolidBrush(Color.Black), startPositionX, startPositionY, sizeX, sizeY);
+            }
+             
         }
+
+       
+
+        
 
         
     }
