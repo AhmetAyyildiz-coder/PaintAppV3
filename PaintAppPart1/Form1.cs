@@ -369,12 +369,23 @@ namespace PaintAppPart1
 
                     pointY = pointX;
                 }
-                //else if (IsSelectShape == true)
-                //{
-                //    //selectedBaseShape.Fill(graphics, Color.White);
-                //    selectedBaseShape.removeDraw(graphics);
+                else if (IsSelectShape == true)
+                {
+                    if (selectedBaseShape != null)
+                    {
+                        selectedBaseShape.X += e.X;
+                        selectedBaseShape.Y += e.Y;
 
-                //}
+                    }
+                    else
+                        MessageBox.Show("seçilen item bulunamadı");
+
+                    //Rectangle rectangle = new Rectangle();
+                    //rectangle.Width = e.X - rectangle.X;
+                    //rectangle.Height = e.Y - rectangle.Y;
+                    Refresh();
+                     
+                }
             }
             PaintPictureBox.Refresh();
 
