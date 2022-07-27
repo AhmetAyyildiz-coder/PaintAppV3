@@ -92,21 +92,49 @@ namespace PaintAppPart1
 
             if (isPaint)
             {
-
-                switch (selectedShapeName)
+                if (selectedOperation != selectedShapeOperation.pencil.ToString())
                 {
-                    case "circle":
-                        graphics.FillEllipse(new SolidBrush(defaultPen.Color), startPositionX, startPositionY, sizeX, sizeY);
-                        break;
-                    case "square":
-                        baseShape _shape = new baseShape(defaultPen.Color, startPositionX, startPositionY, sizeX, sizeY);
-                        _shape.Fill(graphics, defaultPen.Color);
-                       
-                       
-                        break;
-                    default:
-                        break;
-                }
+                    switch (selectedShapeName)
+                    {
+                        case "circle":
+                            baseShape shapeCircle = new baseShape(defaultPen.Color, startPositionX, startPositionY, sizeX, sizeY);
+                            shapeCircle.FillCircle(graphics, startPositionX, startPositionY, sizeX, sizeY);
+                            break;
+                        case "square":
+                            Point[] squarePoints = new Point[]
+                            {
+                        new Point(startPositionX, startPositionY),
+                        new Point(startPositionX+sizeX,startPositionY),
+                        new Point(startPositionX+sizeX , startPositionY+sizeY),
+                        new Point(startPositionX , startPositionY+sizeY)
+                            };
+                            baseShape _shape = new baseShape(defaultPen.Color, startPositionX, startPositionY, sizeX, sizeY);
+                            _shape.Fill(graphics, defaultPen.Color, "square", squarePoints);
+                            break;
+                        case "triangle":
+                            Point[] mypoints = new Point[]
+                            {
+                        new Point(startPositionX+sizeX/2 ,startPositionY ),
+                        new Point(startPositionX+sizeX,startPositionY+sizeY),
+                        new Point(startPositionX,startPositionY+sizeY),
+                        new Point(startPositionX+sizeX/2 ,startPositionY)
+                            };
+                            baseShape _shape2 = new baseShape(defaultPen.Color, startPositionX, startPositionY, sizeX, sizeY);
+                            _shape2.Fill(graphics, defaultPen.Color, "triangle", mypoints);
+
+                            break;
+
+                        case "hexagon":
+                            baseShape shapeHexagon = new baseShape(defaultPen.Color, startPositionX, startPositionY, sizeX, sizeY);
+                            shapeHexagon.FillHexagon(graphics, startPositionX, startPositionY, sizeY);
+                            break;
+                        default:
+                            break;
+                    }
+                }   
+                    
+                
+                
 
             }
         }
@@ -125,7 +153,7 @@ namespace PaintAppPart1
             {
                 if (selectedBaseShape != null)
                 {
-                    graphics.FillRectangle(new SolidBrush(Color.White), selectedBaseShape.X - 15, selectedBaseShape.Y - 15, selectedBaseShape.Width + 30, selectedBaseShape.Height + 30);
+                    selectedBaseShape.removeDraw(graphics);
                     allShape.Remove(selectedBaseShape);
                 }
                 
@@ -133,6 +161,7 @@ namespace PaintAppPart1
             else
             {
                 graphics.Clear(Color.White);
+              
             }
             
             selectedOperation = selectedShapeOperation.trash.ToString();
@@ -269,6 +298,8 @@ namespace PaintAppPart1
         {
             selectedShapeName = selectedShape.triangle.ToString();
             selectedOperation = String.Empty;
+
+           
         }
 
         private void btnHexagon_Click(object sender, EventArgs e)
@@ -314,10 +345,10 @@ namespace PaintAppPart1
                 //eğer seçilen yerde bir nesne varsa ;
                 if (selectedBaseShape != null)
                 {
-                 // MessageBox.Show("Test");
+                    // MessageBox.Show("Test");
 
-                    var itemsAll2 = allShape.FindAll(i => i.isSelected == true);
-                    if (itemsAll2.Count == 0)
+                    var isSelectedItems = allShape.FindAll(i => i.isSelected == true);
+                    if (isSelectedItems.Count == 0)
                     {
                         selectedBaseShape.isSelected = true;
                         graphics.FillRectangle(new SolidBrush(Color.FromArgb(140, Color.Red)), selectedBaseShape.X - 10, selectedBaseShape.Y - 10, selectedBaseShape.Width + 20, selectedBaseShape.Height + 20);
@@ -326,11 +357,14 @@ namespace PaintAppPart1
                     else
                     {
                         //ilk olarak - önceki seçilmiş olan nesnemizi devre dışı bırakalım
-                        foreach (var itemShape in itemsAll2)
+                        foreach (var itemShape in isSelectedItems)
                         {
                             graphics.FillRectangle(new SolidBrush(Color.White), itemShape.X - 20, itemShape.Y - 20, itemShape.Width + 40, itemShape.Height + 40);
                             Thread.Sleep(100);
-                            itemShape.Fill(graphics, itemShape.itemColor);
+                            //itemShape.Fill(graphics, itemShape.itemColor);
+                            //itemShape.Fill(graphics, defaultPen.Color ,) ??
+                            //var b = itemShape;
+                            //var c = 20;
                         }
 
                         //ardından yeni nesnemizi seçelim.
@@ -341,10 +375,10 @@ namespace PaintAppPart1
 
 
                 }
-                
-               
+
+
             }
-            
+
         }
         private void PaintPictureBox_MouseDown(object sender, MouseEventArgs e)
         {
@@ -360,10 +394,13 @@ namespace PaintAppPart1
         
         private void PaintPictureBox_MouseMove(object sender, MouseEventArgs e)
         {
+            lblX.Text = e.X.ToString();
+            lblY.Text = e.Y.ToString();
             if (isPaint)
             {
                 if (selectedOperation == "pencil")
                 {//kullanıcımız kalem seçmiş demektir.
+                    IsSelectShape = false;
                     pointX = e.Location;
                     graphics.DrawLine(defaultPen, pointY, pointX);
 
@@ -373,16 +410,14 @@ namespace PaintAppPart1
                 {
                     if (selectedBaseShape != null)
                     {
-                        selectedBaseShape.X += e.X;
-                        selectedBaseShape.Y += e.Y;
+                        selectedBaseShape.removeDraw(graphics);
+                        //graphics.FillRectangle(new SolidBrush(selectedBaseShape.itemColor) ,e.X, e.Y, selectedBaseShape.Width , selectedBaseShape.Height);
 
+                        selectedBaseShape.FillWithCoordinats(graphics, e.X, e.Y);
+                        
                     }
-                    else
-                        MessageBox.Show("seçilen item bulunamadı");
-
-                    //Rectangle rectangle = new Rectangle();
-                    //rectangle.Width = e.X - rectangle.X;
-                    //rectangle.Height = e.Y - rectangle.Y;
+                    
+                   
                     Refresh();
                      
                 }
@@ -404,20 +439,53 @@ namespace PaintAppPart1
             //for draw rectangle
             sizeX = MoveX - startPositionX;
             sizeY = MoveY - startPositionY;
-            
-            switch (selectedShapeName)
+
+            if (selectedOperation != selectedShapeOperation.pencil.ToString())
             {
-                case "circle":
-                    graphics.FillEllipse(new SolidBrush(defaultPen.Color), startPositionX, startPositionY, sizeX, sizeY);
-                    break;
-                case "square":
-                    baseShape _shape = new baseShape(defaultPen.Color, startPositionX, startPositionY, sizeX, sizeY);
-                    _shape.Fill(graphics, defaultPen.Color);
-                    allShape.Add(_shape);
-                    break;
-                default:
-                    break;
+                switch (selectedShapeName)
+                {
+
+                    case "circle":
+                        baseShape shapeCircle = new baseShape(defaultPen.Color, startPositionX, startPositionY, sizeX, sizeY);
+                        shapeCircle.FillCircle(graphics, startPositionX, startPositionY, sizeX, sizeY);
+                        allShape.Add(shapeCircle);
+                        break;
+                    case "square":
+                        Point[] squarePoints = new Point[]
+                        {
+                        new Point(startPositionX, startPositionY),
+                        new Point(startPositionX+sizeX,startPositionY),
+                        new Point(startPositionX+sizeX , startPositionY+sizeY),
+                        new Point(startPositionX , startPositionY+sizeY)
+                        };
+                        baseShape _shape = new baseShape(defaultPen.Color, startPositionX, startPositionY, sizeX, sizeY);
+                        _shape.Fill(graphics, defaultPen.Color, "square", squarePoints);
+                        allShape.Add(_shape);
+                        break;
+
+                    case "triangle":
+                        Point[] mypoints = new Point[]
+                        {
+                        new Point(startPositionX+sizeX/2 ,startPositionY ),
+                        new Point(e.X,e.Y),
+                        new Point(e.X-sizeX,e.Y),
+                        new Point(startPositionX+sizeX/2 ,startPositionY)
+                        };
+                        baseShape _shape2 = new baseShape(defaultPen.Color, startPositionX, startPositionY, sizeX, sizeY);
+                        _shape2.Fill(graphics, defaultPen.Color, "triangle", mypoints);
+                        allShape.Add(_shape2);
+
+                        break;
+                    case "hexagon":
+                        baseShape shapeHexagon = new baseShape(defaultPen.Color, startPositionX, startPositionY, sizeX, sizeY);
+                        shapeHexagon.FillHexagon(graphics, startPositionX, startPositionY, sizeY);
+                        allShape.Add(shapeHexagon);
+                        break;
+                    default:
+                        break;
+                }
             }
+            
 
         }
 

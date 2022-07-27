@@ -63,15 +63,20 @@ namespace PaintAppPart1.Domain
         public void removeDraw(Graphics selectedGrap)
         {
             defaultPen.Color = Color.White;
-            selectedGrap.DrawRectangle(defaultPen, this.X-20,this.Y-20 , width+40 , height+40 );
+            selectedGrap.FillRectangle(new SolidBrush(Color.White), this.X - 15, this.Y - 15, this.Width + 30, this.Height + 30);
         }
 
-        public void Fill(Graphics selectedGrap , Color? color)
+        /// <summary>
+        /// this overried is only circle and rectangle
+        /// </summary>
+        /// <param name="selectedGrap"></param>
+        /// <param name="color"></param>
+        public void Fill(Graphics selectedGrap , Color? color )
         {
-            if (color !=null)
-            {
-                selectedGrap.FillRectangle(new SolidBrush(color.Value), X, Y, Width, Height);
 
+            if (color !=null)
+            {              
+                    selectedGrap.FillRectangle(new SolidBrush(color.Value), X, Y, Width, Height);
             }
             else
             {
@@ -79,7 +84,62 @@ namespace PaintAppPart1.Domain
 
             }
         }
+        public void FillCircle(Graphics grap , int x , int y , int width , int height)
+        {
+            grap.FillEllipse(new SolidBrush(defaultPen.Color) , x , y , width , height);
+        }
 
+        public void FillHexagon(Graphics grap , float x , float y , float radius)
+        {
+            Point[] coordinats = new Point[6];
+            for (int i = 0; i < 6; i++)
+            {
+                coordinats[i] = new Point(
+                    (int)(x + radius * (float)Math.Cos(i * 60 * Math.PI / 180f)),
+                    (int)(y + radius * (float)Math.Sin(i * 60 * Math.PI / 180f)));
+            };
+
+            grap.FillPolygon(new SolidBrush(defaultPen.Color), coordinats);
+            
+        }
+
+        /// <summary>
+        /// this overried ise only Triange and hexagon
+        /// </summary>
+        /// <param name="selectedGrap"></param>
+        /// <param name="color"></param>
+        /// <param name="shapeName"></param>
+        /// <param name="coordinatList">For hexagon and triangle</param>
+        public void Fill(Graphics selectedGrap, Color? color, string shapeName, Point[] coordinatList)
+        {
+
+            if (color != null)
+            {
+
+                if (shapeName == "triangle")
+                {
+                    selectedGrap.FillPolygon(new SolidBrush(itemColor), coordinatList);
+
+                }
+                else if (shapeName == "hexagon")
+                {
+
+                }
+                else if (shapeName == "square")
+                    selectedGrap.FillPolygon(new SolidBrush(itemColor), coordinatList);
+                //else if(shapeName == "circle")
+                //    selectedGrap.FillEllipse(new SolidBrush(defaultPen.Color),)
+            }
+            else
+            {
+                selectedGrap.FillRectangle(new SolidBrush(defaultPen.Color), X, Y, Width, Height);
+
+            }
+        }
+        public void FillWithCoordinats(Graphics grap , int x , int y)
+        {
+            grap.FillRectangle(new SolidBrush(this.itemColor), x, y, this.Width, this.Height);
+        }
        
         public int Y
         {
